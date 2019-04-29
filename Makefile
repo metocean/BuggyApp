@@ -59,7 +59,7 @@ debug:	CXXFLAGS	= $(CFLAGS) -std=gnu++1z
 debug: all
 
 clean:  
-	-$(DEL_FILE) $(OBJECTS) $(TARGET)
+	-$(DEL_FILE) $(OBJECTS)
 
 $(TARGET):  $(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $@ $^ $(LIBS)
