@@ -31,10 +31,10 @@ main(int /* argc */, char ** /* argv[] */)
 void
 consumeMemory(struct client * client)
 {
-    std::cout << "consumeMemory" << std::endl;
-    unsigned int sz = rand() * 1024;
+    unsigned int sz = rand() * 100;
+    const std::string r = std::to_string(sz / 1024.0 / 1024).substr(0, 6) + "Mb memory consumed!\n";
+    std::cout << "consumeMemory:" << r << std::endl;
     new char[sz]; // 10Mb
-    const std::string r = std::to_string(sz / 1024.0 / 1024) + "Mb memory consumed!\n";
     client_send(client, r.c_str(), r.size());
 }
 
