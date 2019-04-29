@@ -52,38 +52,22 @@ TARGET	= BuggyApp
 
 
 ####### Build rules
-$(TARGET):  $(OBJECTS)  
-	$(LINK) $(LFLAGS) -o $@ $^ $(LIBS)
-
 all: $(TARGET)
 
-debug: CXXFLAGS += -DDEBUG -g
-debug: CFLAGS += -DDEBUG -g
+debug:	CFLAGS		= -pipe -DDEBUG -g -Wall -W -fPIC 
+debug:	CXXFLAGS	= $(CFLAGS) -std=gnu++1z
 debug: all
-
 
 clean:  
 	-$(DEL_FILE) $(OBJECTS) $(TARGET)
 
+$(TARGET):  $(OBJECTS)  
+	$(LINK) $(LFLAGS) -o $@ $^ $(LIBS)
+
 ####### Compile
 $(HEADERS):
 
-main.o: main.cpp $(HEADERS)
+%.o: %.cpp $(HEADERS)
 	$(CXX) -c $(CFLAGS) $(INCPATH) -o $@ $<
-
-picohttpparser.o: grody/picohttpparser/picohttpparser.c $(HEADERS)
+%.o: grody/picohttpparser/%.c grody/%.c $(HEADERS)
 	$(CC) -c $(CFLAGS) $(INCPATH) -o $@ $<
-
-webserver.o: grody/webserver.c grody/webserver.h $(HEADERS)
-	$(CC) -c $(CFLAGS) $(INCPATH) -o $@ $<
-
-thread.o: grody/thread.c $(HEADERS)
-	$(CC) -c $(CFLAGS) $(INCPATH) -o $@ $<
-
-io.o: grody/io.c $(HEADERS)
-	$(CC) -c $(CFLAGS) $(INCPATH) -o $@ $<
-
-fork.o: grody/fork.c $(HEADERS)
-	$(CC) -c $(CFLAGS) $(INCPATH) -o $@ $<
-
-

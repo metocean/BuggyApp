@@ -10,6 +10,9 @@ extern "C" {
 void
 run_server_threaded(struct server *server);
 
+void
+run_server_1_thread(struct server *server);
+
 #ifdef __cplusplus
 }
 #endif

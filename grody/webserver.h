@@ -161,7 +161,8 @@ enum webserver_errors {
 
 enum webserver_mode {
     fork_mode = 0,
-    thread_mode = 1
+    thread_mode = 1,
+    thread_1_mode = 2
 };
 
 struct request {

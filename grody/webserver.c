@@ -880,6 +880,11 @@ run_webserver_forever(
         case thread_mode:
             run_server_threaded(&server);
             break;
+        
+        case thread_1_mode:
+            run_server_1_thread(&server);
+            break;
+
     }
 
     return no_fatal_errors;
