@@ -34,9 +34,10 @@ consumeMemory(struct client * client)
     unsigned int sz = rand() * 100;
     const char * pch = new char[sz]; // 10Mb
     const std::string r = "consumeMemory:" + std::to_string(sz / 1024.0 / 1024).substr(0, 6)
-        + (pch != nullptr ? " Mb memory consumed!" : " not enought memory to allocate.");
+        + (pch != nullptr ? " Mb memory consumed!" : " not enought memory to allocate.") + "\n";
     std::cout << r << std::endl;
     client_send(client, r.c_str(), r.size());
+    client_shutdown(client);
 }
 
 void
