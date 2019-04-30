@@ -22,8 +22,8 @@ main(int /* argc */, char ** /* argv[] */)
 
     std::cout << "Started..." << std::endl;
 
-    if(run_webserver_forever(thread_1_mode /*fork_mode*/, &settings, handlers, on_connection_created,
-           on_connection_destruction)) {
+    if(run_webserver_forever(single_thread_mode, &settings, handlers,
+           on_connection_created, on_connection_destruction)) {
         return 1;
     }
 }
@@ -32,9 +32,10 @@ void
 consumeMemory(struct client * client)
 {
     unsigned int sz = rand() * 100;
-    const std::string r = std::to_string(sz / 1024.0 / 1024).substr(0, 6) + "Mb memory consumed!\n";
-    std::cout << "consumeMemory:" << r << std::endl;
-    new char[sz]; // 10Mb
+    const char * pch = new char[sz]; // 10Mb
+    const std::string r = "consumeMemory:" + std::to_string(sz / 1024.0 / 1024).substr(0, 6)
+        + (pch != nullptr ? " Mb memory consumed!" : " not enought memory to allocate.");
+    std::cout << r << std::endl;
     client_send(client, r.c_str(), r.size());
 }
 

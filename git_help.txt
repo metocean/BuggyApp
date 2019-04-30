@@ -1,0 +1,3 @@
+### GIT help notice from Sergei to Sergei
+## git submodule add git@github.com:metocean/grody.git
+## git submodule update --init --recursive
