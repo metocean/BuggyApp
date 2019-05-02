@@ -5,7 +5,8 @@ kubectl port-forward svc/buggyapp-lb 8080:8080
 
 #cd BuggyApp
 #compile
-git submodule update --init --recursive
+git submodule update --init --recursive --checkout
+git submodule foreach git checkout origin/master
 
 docker run --rm -v "$(pwd)":/BuggyApp -w /BuggyApp gcc:8.3 /bin/bash -c "make clean; make"
 #build
