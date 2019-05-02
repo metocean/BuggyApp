@@ -5,6 +5,7 @@
 #include "grody/webserver.h"
 
 void consumeMemory(struct client *);
+void healthCheck(struct client *);
 void exitEmulation(struct client *);
 void hangEmulation(struct client *);
 void on_connection_created(struct client *);
@@ -13,8 +14,9 @@ void on_connection_destruction(struct client *);
 int
 main(int /* argc */, char ** /* argv[] */)
 {
-    struct request_handler handlers[] = {{"GET", "/memory", consumeMemory},
-        {"GET", "/exit", exitEmulation}, {"GET", "/hang", hangEmulation}, {}};
+    struct request_handler handlers[]
+        = {{"GET", "/health", healthCheck}, {"GET", "/memory", consumeMemory},
+            {"GET", "/exit", exitEmulation}, {"GET", "/hang", hangEmulation}, {}};
 
     struct server_settings settings = {};
     server_settings_defaults(&settings);
@@ -22,17 +24,27 @@ main(int /* argc */, char ** /* argv[] */)
 
     std::cout << "Started..." << std::endl;
 
-    if(run_webserver_forever(single_thread_mode, &settings, handlers,
-           on_connection_created, on_connection_destruction)) {
+    if(run_webserver_forever(single_thread_mode, &settings, handlers, on_connection_created,
+           on_connection_destruction)) {
         return 1;
     }
 }
 
 void
-consumeMemory(struct client * client)
+healthCheck(client * client)
+{
+    char reply[] = "Ok\n";
+    start_response(client, http_ok, http_ok_text, mime_text, 3/*sizeof(reply)*/);
+    client_send(client, reply, 3/*sizeof(reply)*/);
+    client_shutdown(client);
+}
+
+void
+consumeMemory(client * client)
 {
     unsigned int sz = rand() * 100;
-    const char * pch = new char[sz]; // 10Mb
+    new char[sz]; // 10Mb
+    const char * pch = new char;
     const std::string r = "consumeMemory:" + std::to_string(sz / 1024.0 / 1024).substr(0, 6)
         + (pch != nullptr ? " Mb memory consumed!" : " not enought memory to allocate.") + "\n";
     std::cout << r << std::endl;

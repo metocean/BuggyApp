@@ -1,0 +1,46 @@
+apiVersion: extensions/v1beta1
+kind: Deployment                                          # 1
+metadata:
+  name: buggyapp
+spec:
+  selector:
+    matchLabels: 
+      app: buggyapp
+  replicas: 2                                             # 2
+  minReadySeconds: 15
+  strategy:
+    type: RollingUpdate                                   # 3
+    rollingUpdate: 
+      maxUnavailable: 1                                   # 4
+      maxSurge: 1                                         # 5
+  template:
+    metadata:
+      labels:
+        app: buggyapp                                  # 6
+    spec:
+      containers:
+        - image: sergeimelman/buggyapp
+          imagePullPolicy: Always                         # 7
+          name: buggyapp
+          ports:
+            - containerPort: 8080
+          #readinessProbe:
+          #  httpGet: {path: /health, port: 8080}
+          #  initialDelaySeconds: 10
+          #  periodSeconds: 10
+          #livenessProbe:
+          #  exec:
+          #    command:
+          #      - cat
+          #      - /tmp/healthy
+          #  initialDelaySeconds: 5
+          #  periodSeconds: 5
+          #livenessProbe:
+          #  httpGet:
+          #    path: /health
+          #    port: 8080
+          #    httpHeaders:
+          #    - name: Custom-Header
+          #      value: Awesome
+          #  initialDelaySeconds: 3
+          #  periodSeconds: 3
