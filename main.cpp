@@ -4,7 +4,7 @@
 #include <string>
 #include "grody/webserver.h"
 
-void defaultResponse(client *);
+void defaultRespond(client *){}
 void getId(client *);
 void consumeMemory(client *);
 void healthCheck(client *);
@@ -18,7 +18,7 @@ main(int /* argc */, char ** /* argv[] */)
 {
     struct request_handler handlers[] = {{"GET", "/id", getId}, {"GET", "/health", healthCheck},
         {"GET", "/memory", consumeMemory}, {"GET", "/exit", exitEmulation},
-        {"GET", "/hang", hangEmulation}, {"GET", "/", defaultResponse}, {}};
+        {"GET", "/hang", hangEmulation}, {"GET", "", defaultRespond}, {}};
 
     struct server_settings settings = {};
     server_settings_defaults(&settings);
@@ -36,15 +36,8 @@ void
 sendstr(client * client, const std::string & reply)
 {
     std::cout << reply << std::endl;
-    start_response(client, http_ok, http_ok_text, mime_text, reply.size());
-    client_send(client, reply.c_str(), reply.size());
+    respond(client, http_ok, http_ok_text, mime_text, reply.c_str(), reply.size());
     client_shutdown(client);
-}
-
-void
-defaultResponse(client * client)
-{
-    sendstr(client, "Default\n");
 }
 
 void
@@ -56,8 +49,7 @@ healthCheck(client * client)
 void
 getId(client * client)
 {
-    const std::string r = "getId:" + std::to_string(pthread_self()) + "\n";
-    sendstr(client, r);
+    sendstr(client, "getId:" + std::to_string(pthread_self()) + "\n");
 }
 
 #include <vector>
@@ -82,7 +74,11 @@ consumeMemory(client * client)
 void
 exitEmulation(client * client)
 {
-    sendstr(client, "exitEmulation");
+    sendstr(client, "exitEmulation\n");
+
+    int no_delay = 1;
+    setsockopt(client->sock, IPPROTO_TCP, 1, (char *)&no_delay, sizeof(int));
+    shutdown(client->sock, SHUT_RDWR);
     exit(-1);
 }
 

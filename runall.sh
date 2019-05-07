@@ -18,7 +18,7 @@ git submodule foreach git checkout origin/master
 #build multystage build process
 
 #build and push 
-BAV=7; docker build --rm --tag=sergeimelman/buggyapp:$BAV .;docker push sergeimelman/buggyapp
+BAV=8; docker build --rm --tag=sergeimelman/buggyapp:$BAV .;docker push sergeimelman/buggyapp
 
 #test
 docker run --rm --name=buggyapp -p 8080:8080 sergeimelman/buggyapp

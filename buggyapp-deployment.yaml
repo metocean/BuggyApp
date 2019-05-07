@@ -24,12 +24,12 @@ spec:
           name: buggyapp
           ports:
             - containerPort: 8080
-          #livenessProbe:
-          #  httpGet:
-          #    path: /health1
-          #    port: 8080
-          #  initialDelaySeconds: 3
-          #  periodSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /heal/th
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 3
           #readinessProbe:
           #  httpGet: {path: /health1, port: 8080}
           #  initialDelaySeconds: 5
