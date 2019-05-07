@@ -4,19 +4,21 @@
 #include <string>
 #include "grody/webserver.h"
 
-void consumeMemory(struct client *);
-void healthCheck(struct client *);
-void exitEmulation(struct client *);
-void hangEmulation(struct client *);
-void on_connection_created(struct client *);
-void on_connection_destruction(struct client *);
+void defaultResponse(client *);
+void getId(client *);
+void consumeMemory(client *);
+void healthCheck(client *);
+void exitEmulation(client *);
+void hangEmulation(client *);
+void on_connection_created(client *);
+void on_connection_destruction(client *);
 
 int
 main(int /* argc */, char ** /* argv[] */)
 {
-    struct request_handler handlers[]
-        = {{"GET", "/health", healthCheck}, {"GET", "/memory", consumeMemory},
-            {"GET", "/exit", exitEmulation}, {"GET", "/hang", hangEmulation}, {}};
+    struct request_handler handlers[] = {{"GET", "/id", getId}, {"GET", "/health", healthCheck},
+        {"GET", "/memory", consumeMemory}, {"GET", "/exit", exitEmulation},
+        {"GET", "/hang", hangEmulation}, {"GET", "/", defaultResponse}, {}};
 
     struct server_settings settings = {};
     server_settings_defaults(&settings);
@@ -31,38 +33,64 @@ main(int /* argc */, char ** /* argv[] */)
 }
 
 void
-healthCheck(client * client)
+sendstr(client * client, const std::string & reply)
 {
-    char reply[] = "Ok\n";
-    start_response(client, http_ok, http_ok_text, mime_text, 3/*sizeof(reply)*/);
-    client_send(client, reply, 3/*sizeof(reply)*/);
+    std::cout << reply << std::endl;
+    start_response(client, http_ok, http_ok_text, mime_text, reply.size());
+    client_send(client, reply.c_str(), reply.size());
     client_shutdown(client);
 }
 
+void
+defaultResponse(client * client)
+{
+    sendstr(client, "Default\n");
+}
+
+void
+healthCheck(client * client)
+{
+    sendstr(client, "Ok\n");
+}
+
+void
+getId(client * client)
+{
+    const std::string r = "getId:" + std::to_string(pthread_self()) + "\n";
+    sendstr(client, r);
+}
+
+#include <vector>
 void
 consumeMemory(client * client)
 {
-    unsigned int sz = rand() * 100;
-    new char[sz]; // 10Mb
-    const char * pch = new char;
-    const std::string r = "consumeMemory:" + std::to_string(sz / 1024.0 / 1024).substr(0, 6)
-        + (pch != nullptr ? " Mb memory consumed!" : " not enought memory to allocate.") + "\n";
-    std::cout << r << std::endl;
-    client_send(client, r.c_str(), r.size());
-    client_shutdown(client);
+    auto v
+        = new std::vector<char>(rand() % 200000000, 1); // It throws, so it'll crash - good here :)
+    auto ssz = std::to_string(v->size());
+
+    const int t = ssz.size();
+    if(t > 3)
+        ssz.insert(t - 3, "K ");
+    if(t > 6)
+        ssz.insert(t - 6, "M ");
+    if(t > 9)
+        ssz.insert(t - 9, "G ");
+
+    sendstr(client, "consumeMemory:" + ssz + " bytes\n");
 }
 
 void
-exitEmulation(struct client *)
+exitEmulation(client * client)
 {
-    std::cout << "exitEmulation" << std::endl;
-    exit(0);
+    sendstr(client, "exitEmulation");
+    exit(-1);
 }
 
 void
-hangEmulation(struct client *)
+hangEmulation(client * client)
 {
-    std::cout << "hangEmulation" << std::endl;
+    std::cout << "Hang" << std::endl;
+    client_send(client, "Hang", 4);
     while(1) {
         /* forever */
     }

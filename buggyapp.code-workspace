@@ -1,12 +1,7 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-		"files.associations": {
-			"string": "cpp"
-		}
-	}
+    "folders": [
+        {
+            "path": "."
+        }
+    ]
 }

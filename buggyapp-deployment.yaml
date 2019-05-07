@@ -16,31 +16,23 @@ spec:
   template:
     metadata:
       labels:
-        app: buggyapp                                  # 6
+        app: buggyapp                                     # 6
     spec:
       containers:
-        - image: sergeimelman/buggyapp
+        - image: sergeimelman/buggyapp:7
           imagePullPolicy: Always                         # 7
           name: buggyapp
           ports:
             - containerPort: 8080
-          #readinessProbe:
-          #  httpGet: {path: /health, port: 8080}
-          #  initialDelaySeconds: 10
-          #  periodSeconds: 10
-          #livenessProbe:
-          #  exec:
-          #    command:
-          #      - cat
-          #      - /tmp/healthy
-          #  initialDelaySeconds: 5
-          #  periodSeconds: 5
           #livenessProbe:
           #  httpGet:
-          #    path: /health
+          #    path: /health1
           #    port: 8080
-          #    httpHeaders:
-          #    - name: Custom-Header
-          #      value: Awesome
           #  initialDelaySeconds: 3
           #  periodSeconds: 3
+          #readinessProbe:
+          #  httpGet: {path: /health1, port: 8080}
+          #  initialDelaySeconds: 5
+          #  periodSeconds: 5
+          #resources:
+          #  memory: 1Gb             
