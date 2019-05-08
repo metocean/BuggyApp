@@ -4,7 +4,7 @@
 #include <string>
 #include "grody/webserver.h"
 
-void defaultRespond(client *){}
+void defaultRespond(client *){/*does nothig! or else it sends empty answer, BUT SENDS!*/}
 void getId(client *);
 void consumeMemory(client *);
 void healthCheck(client *);
