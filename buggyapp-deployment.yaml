@@ -1,4 +1,40 @@
 ---
+### Base load balancer - we do not need ENTRYPOINT - provides an access to the Ingress
+#  apiVersion: v1
+#  kind: Service
+#  metadata:
+#    name: buggyapp-entrypoint
+#  spec:
+#    type: LoadBalancer            # for access to ingress
+#    ports:
+#    - port: 80
+#      protocol: TCP    
+#      targetPort: 80 # Ingress is still on 80
+#    selector:
+#      #name: buggyapp-traefik-ingress
+#      name: buggyapp-traefik-ingress
+---
+## Ingress load balancer
+  apiVersion: extensions/v1beta1
+  kind: Ingress
+  metadata:
+    name: buggyapp-traefik-ingress
+    labels:
+      name: buggyapp-traefik-ingress
+    annotations:
+      kubernetes.io/ingress.class: traefik
+  spec:
+    backend: #it works
+      serviceName: buggyapp
+      servicePort: 8080
+    #rules: #it works too
+    #- http:
+    #    paths:
+    #    - path: /
+    #      backend:
+    #        serviceName: buggyapp
+    #        servicePort: 8080
+---
 ## Service
   apiVersion: v1
   kind: Service
@@ -11,7 +47,6 @@
       targetPort: 8080
     selector:
       app: buggyapp
-    #type: LoadBalancer
 ---
 ## Deployment
   apiVersion: extensions/v1beta1
@@ -22,7 +57,7 @@
     selector:
       matchLabels: 
         app: buggyapp
-    replicas: 2
+    replicas: 3
     minReadySeconds: 15
     strategy:
       type: RollingUpdate
@@ -35,7 +70,7 @@
           app: buggyapp
       spec:
         containers:
-          - image: sergeimelman/buggyapp:8
+          - image: sergeimelman/buggyapp:1
             imagePullPolicy: Always
             name: buggyapp
             ports:
@@ -61,18 +96,3 @@
             #  initialDelaySeconds: 5
             #  periodSeconds: 5
 ---
-## Ingress load balancer
-  apiVersion: extensions/v1beta1
-  kind: Ingress
-  metadata:
-    name: buggyappingress
-    annotations:
-      kubernetes.io/ingress.class: traefik
-  spec:
-    rules:
-    - http:
-        paths:
-        - path: /
-          backend:
-            serviceName: buggyapp
-            servicePort: 8080

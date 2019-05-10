@@ -4,14 +4,14 @@ kubectl apply -f buggyapp-deployment.yaml --record
 
 ##tests
 #kubectl port-forward svc/buggyapp-lb 8080:8080
-while true; do date >txt;kubectl get all >>txt 2>&1; echo ----- >>txt;kubectl top pods>>txt 2>&1; clear; cat txt; sleep 3; done
+while true; do date >txt;kubectl get ing,all >>txt 2>&1; echo ----- >>txt;kubectl top pods>>txt 2>&1; clear; cat txt; sleep 3; done
 kubectl logs -f -l app=buggyapp
 
 kubectl rollout history deployment
 kubectl rollout history all
 
 ##build multystage build process. build and push 
-BAV=8; docker build --rm --tag=sergeimelman/buggyapp:$BAV .;docker push sergeimelman/buggyapp:$BAV
+BAV=1; docker build --rm --tag=sergeimelman/buggyapp:$BAV .;docker push sergeimelman/buggyapp:$BAV
 
 #cd BuggyApp
 ##compile
