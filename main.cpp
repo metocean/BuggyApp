@@ -52,22 +52,29 @@ getId(client * client)
     sendstr(client, "getId:" + std::to_string(pthread_self()) + "\n");
 }
 
+std::string
+bytesAmountToString(int amount)
+{
+    auto slegth = std::to_string(amount);
+
+    const int t = slegth.size();
+    if(t > 3)
+        slegth.insert(t - 3, "k");
+    if(t > 6)
+        slegth.insert(t - 6, "m");
+    if(t > 9)
+        slegth.insert(t - 9, "g");
+
+    return slegth;
+}
+
 #include <vector>
 void
 consumeMemory(client * client)
 {
-    auto v
+    const auto v
         = new std::vector<char>(rand() % 200000000, 1); // It throws, so it'll crash - good here :)
-    auto ssz = std::to_string(v->size());
-
-    const int t = ssz.size();
-    if(t > 3)
-        ssz.insert(t - 3, "K ");
-    if(t > 6)
-        ssz.insert(t - 6, "M ");
-    if(t > 9)
-        ssz.insert(t - 9, "G ");
-
+    const auto ssz = bytesAmountToString(v->size());
     sendstr(client, "consumeMemory:" + ssz + " bytes\n");
 }
 
