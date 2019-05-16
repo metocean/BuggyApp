@@ -10,7 +10,7 @@ void consumeMemory(client *);
 void healthCheck(client *);
 void exitEmulation(client *);
 void hangEmulation(client *);
-void on_connection_created(client *);
+int on_connection_created(client *);
 void on_connection_destruction(client *);
 
 int
@@ -99,11 +99,12 @@ hangEmulation(client * client)
     }
 }
 
-void
+int
 on_connection_created(struct client *)
 {
     std::cout << "on_connection_created" << std::endl;
     // nothing todo
+    return 0;
 }
 
 void
